@@ -43,8 +43,10 @@ if "body_mass_g" in df.columns:
 df.dropna(inplace=True)
 
     # Input / Output split
-y = df["species"]
-X = df.drop(columns=["species"])
+target_col = st.selectbox("Select target column:", df.columns)
+
+y = df[target_col]
+X = df.drop(columns=[target_col])
 
     # Encode labels
 le = LabelEncoder()
@@ -157,6 +159,7 @@ plt.legend(handles=scatter.legend_elements()[0], labels=le.classes_)
 st.pyplot(fig)
 
 st.success("Done!")
+
 
 
 
