@@ -158,9 +158,11 @@ X_pca = pca.fit_transform(preprocessor.fit_transform(X))
 fig, ax = plt.subplots()
 scatter = ax.scatter(X_pca[:, 0], X_pca[:, 1], c=y_encoded)
 handles, labels_auto = scatter.legend_elements(prop="colors")
-plt.legend(handles, le.classes_, title="Classes")st.pyplot(fig)
+plt.legend(handles, le.classes_, title="Classes")
+st.pyplot(fig)
 
 st.success("Done!")
+
 
 
 
