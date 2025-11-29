@@ -31,9 +31,6 @@ github_url = "https://github.com/bloxxastro1/Epsilon-Grad4/blob/main/penguins_si
 df = pd.read_csv(github_url, sep=",", engine="python", on_bad_lines="skip")
 st.success("✅ Data loaded successfully!")
 st.write(f"Dataset shape: {df.shape}")
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    st.write("### Dataset Preview", df.head())
 
     # Feature Engineering
     if "culmen_length_mm" in df.columns and "culmen_depth_mm" in df.columns:
@@ -160,4 +157,5 @@ if uploaded_file:
     st.pyplot(fig)
 
     st.success("Done!")
+
 
