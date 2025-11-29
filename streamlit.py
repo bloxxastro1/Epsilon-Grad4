@@ -78,7 +78,7 @@ if model_choice == "SVM":
 
 elif model_choice == "Random Forest":
     classifier = RandomForestClassifier()
-     param_grid = {
+    param_grid = {
         "classifier__n_estimators": [100, 300],
         "classifier__max_depth": [5, 10, None]
     }
@@ -157,6 +157,7 @@ plt.legend(handles=scatter.legend_elements()[0], labels=le.classes_)
 st.pyplot(fig)
 
 st.success("Done!")
+
 
 
 
