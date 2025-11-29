@@ -33,129 +33,130 @@ st.success("✅ Data loaded successfully!")
 st.write(f"Dataset shape: {df.shape}")
 
     # Feature Engineering
-    if "culmen_length_mm" in df.columns and "culmen_depth_mm" in df.columns:
-        df["culmen_area"] = df["culmen_length_mm"] * df["culmen_depth_mm"]
+if "culmen_length_mm" in df.columns and "culmen_depth_mm" in df.columns:
+    df["culmen_area"] = df["culmen_length_mm"] * df["culmen_depth_mm"]
 
-    if "body_mass_g" in df.columns:
-        df["body_mass_per_flipper"] = df["body_mass_g"] / df["flipper_length_mm"]
+if "body_mass_g" in df.columns:
+    df["body_mass_per_flipper"] = df["body_mass_g"] / df["flipper_length_mm"]
 
     # Drop rows with missing values
-    df.dropna(inplace=True)
+df.dropna(inplace=True)
 
     # Input / Output split
-    y = df["species"]
-    X = df.drop(columns=["species"])
+y = df["species"]
+X = df.drop(columns=["species"])
 
     # Encode labels
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y)
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)
 
     # Identify columns
-    cat_cols = X.select_dtypes(include=["object"]).columns.tolist()
-    num_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
+cat_cols = X.select_dtypes(include=["object"]).columns.tolist()
+num_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
 
     # Preprocessing
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols),
-            ("num", MinMaxScaler(), num_cols)
-        ]
-    )
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols),
+        ("num", MinMaxScaler(), num_cols)
+    ]
+)
 
     # Select model
-    model_choice = st.selectbox(
-        "Choose model",
-        ["SVM", "Random Forest", "Logistic Regression", "KNN"]
-    )
+model_choice = st.selectbox(
+    "Choose model",
+    ["SVM", "Random Forest", "Logistic Regression", "KNN"]
+)
 
-    if model_choice == "SVM":
-        classifier = SVC(probability=True)
-        param_grid = {
-            "classifier__C": [0.1, 1, 10],
-            "classifier__kernel": ["rbf", "poly", "sigmoid"],
-            "classifier__gamma": ["scale", 0.01, 0.001],
-        }
+if model_choice == "SVM":
+    classifier = SVC(probability=True)
+    param_grid = {
+        "classifier__C": [0.1, 1, 10],
+        "classifier__kernel": ["rbf", "poly", "sigmoid"],
+        "classifier__gamma": ["scale", 0.01, 0.001],
+    }
 
-    elif model_choice == "Random Forest":
-        classifier = RandomForestClassifier()
-        param_grid = {
-            "classifier__n_estimators": [100, 300],
-            "classifier__max_depth": [5, 10, None]
-        }
+elif model_choice == "Random Forest":
+    classifier = RandomForestClassifier()
+     param_grid = {
+        "classifier__n_estimators": [100, 300],
+        "classifier__max_depth": [5, 10, None]
+    }
 
-    elif model_choice == "Logistic Regression":
+elif model_choice == "Logistic Regression":
         classifier = LogisticRegression(max_iter=500)
         param_grid = {
             "classifier__C": [0.1, 1, 10]
         }
 
-    else:
-        classifier = KNeighborsClassifier()
-        param_grid = {
-            "classifier__n_neighbors": [3, 5, 7]
-        }
+else:
+    classifier = KNeighborsClassifier()
+    param_grid = {
+        "classifier__n_neighbors": [3, 5, 7]
+    }
 
     # Pipeline
-    pipeline = Pipeline([
-        ("preprocessor", preprocessor),
-        ("classifier", classifier)
-    ])
+pipeline = Pipeline([
+    ("preprocessor", preprocessor),
+    ("classifier", classifier)
+])
 
     # Train/Test Split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y_encoded, test_size=0.2, random_state=42
-    )
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y_encoded, test_size=0.2, random_state=42
+)
 
     # Grid Search
-    st.write("### Training & Hyperparameter Tuning...")
-    grid = GridSearchCV(pipeline, param_grid, cv=5, scoring="accuracy", n_jobs=-1)
-    grid.fit(X_train, y_train)
+st.write("### Training & Hyperparameter Tuning...")
+grid = GridSearchCV(pipeline, param_grid, cv=5, scoring="accuracy", n_jobs=-1)
+grid.fit(X_train, y_train)
 
-    st.success("Training Done!")
-    st.write("### Best Parameters", grid.best_params_)
-    st.write("### Best CV Score", grid.best_score_)
+st.success("Training Done!")
+st.write("### Best Parameters", grid.best_params_)
+st.write("### Best CV Score", grid.best_score_)
 
     # Evaluation
-    best_model = grid.best_estimator_
-    y_pred = best_model.predict(X_test)
+best_model = grid.best_estimator_
+y_pred = best_model.predict(X_test)
 
-    st.write("### Test Accuracy", best_model.score(X_test, y_test))
-    st.write("### Classification Report")
-    st.text(classification_report(y_test, y_pred, target_names=le.classes_))
+st.write("### Test Accuracy", best_model.score(X_test, y_test))
+st.write("### Classification Report")
+st.text(classification_report(y_test, y_pred, target_names=le.classes_))
 
     # Confusion Matrix
-    st.write("### Confusion Matrix")
-    fig, ax = plt.subplots()
-    ConfusionMatrixDisplay(confusion_matrix(y_test, y_pred), display_labels=le.classes_).plot(ax=ax)
-    st.pyplot(fig)
+st.write("### Confusion Matrix")
+fig, ax = plt.subplots()
+ConfusionMatrixDisplay(confusion_matrix(y_test, y_pred), display_labels=le.classes_).plot(ax=ax)
+st.pyplot(fig)
 
     # ROC Curve
-    st.write("### ROC Curve (Multiclass)")
-    fig, ax = plt.subplots()
+st.write("### ROC Curve (Multiclass)")
+fig, ax = plt.subplots()
 
-    y_test_bin = label_binarize(y_test, classes=np.arange(len(le.classes_)))
-    y_score = best_model.predict_proba(X_test)
+y_test_bin = label_binarize(y_test, classes=np.arange(len(le.classes_)))
+y_score = best_model.predict_proba(X_test)
 
-    for i, class_name in enumerate(le.classes_):
-        fpr, tpr, _ = roc_curve(y_test_bin[:, i], y_score[:, i])
-        ax.plot(fpr, tpr, label=f"{class_name}")
+for i, class_name in enumerate(le.classes_):
+    fpr, tpr, _ = roc_curve(y_test_bin[:, i], y_score[:, i])
+    ax.plot(fpr, tpr, label=f"{class_name}")
 
-    ax.plot([0, 1], [0, 1], "--")
-    ax.set_xlabel("FPR")
-    ax.set_ylabel("TPR")
-    ax.legend()
-    st.pyplot(fig)
+ax.plot([0, 1], [0, 1], "--")
+ax.set_xlabel("FPR")
+ax.set_ylabel("TPR")
+ax.legend()
+st.pyplot(fig)
 
-    # PCA Visualization
-    st.write("### PCA Visualization (2D)")
-    pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(preprocessor.fit_transform(X))
+    # PCA Visualisation
+st.write("### PCA Visualization (2D)")
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(preprocessor.fit_transform(X))
 
-    fig, ax = plt.subplots()
-    scatter = ax.scatter(X_pca[:, 0], X_pca[:, 1], c=y_encoded)
-    plt.legend(handles=scatter.legend_elements()[0], labels=le.classes_)
-    st.pyplot(fig)
+fig, ax = plt.subplots()
+scatter = ax.scatter(X_pca[:, 0], X_pca[:, 1], c=y_encoded)
+plt.legend(handles=scatter.legend_elements()[0], labels=le.classes_)
+st.pyplot(fig)
 
-    st.success("Done!")
+st.success("Done!")
+
 
 
