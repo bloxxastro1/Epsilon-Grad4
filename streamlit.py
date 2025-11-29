@@ -27,10 +27,12 @@ from sklearn.decomposition import PCA
 st.title("🐧 Penguin Classification ML App")
 st.write("A full ML pipeline with preprocessing, training, tuning, and evaluation.")
 
-github_url = "https://github.com/bloxxastro1/Epsilon-Grad4/blob/main/penguins_size.csv"
-df = pd.read_csv(github_url, sep=",", engine="python", on_bad_lines="skip")
-st.success("✅ Data loaded successfully!")
+github_url = "https://raw.githubusercontent.com/bloxxastro1/Epsilon-Grad4/refs/heads/main/penguins_size.csv"
+
+df = pd.read_csv(github_url)
+
 st.write(f"Dataset shape: {df.shape}")
+st.write(df.head())
 
     # Feature Engineering
 if "culmen_length_mm" in df.columns and "culmen_depth_mm" in df.columns:
@@ -159,6 +161,7 @@ plt.legend(handles=scatter.legend_elements()[0], labels=le.classes_)
 st.pyplot(fig)
 
 st.success("Done!")
+
 
 
 
