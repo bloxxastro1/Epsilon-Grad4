@@ -27,8 +27,10 @@ from sklearn.decomposition import PCA
 st.title("🐧 Penguin Classification ML App")
 st.write("A full ML pipeline with preprocessing, training, tuning, and evaluation.")
 
-uploaded_file = st.file_uploader("Upload your penguins dataset (CSV)", type=["csv"])
-
+github_url = "https://github.com/bloxxastro1/Epsilon-Grad4/blob/main/penguins_size.csv"
+df = pd.read_csv(github_url, sep=",", engine="python", on_bad_lines="skip")
+st.success("✅ Data loaded successfully!")
+st.write(f"Dataset shape: {df.shape}")
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
     st.write("### Dataset Preview", df.head())
@@ -158,3 +160,4 @@ if uploaded_file:
     st.pyplot(fig)
 
     st.success("Done!")
+
